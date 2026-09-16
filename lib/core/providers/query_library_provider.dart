@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
 class SavedQuery {
   final String id;
@@ -61,18 +60,14 @@ class SavedQueriesNotifier extends Notifier<void> {
       query: query,
       projectRef: projectRef,
     );
-
-    final current = ref.read(_inMemoryQueriesProvider);
-    ref.read(_inMemoryQueriesProvider.notifier).state = [...current, newQuery];
+    ref.read(inMemoryQueriesProvider.notifier).add(newQuery);
   }
 
   Future<void> deleteQuery(String id) async {
-    final current = ref.read(_inMemoryQueriesProvider);
-    ref.read(_inMemoryQueriesProvider.notifier).state = current
-        .where((q) => q.id != id)
-        .toList();
+    ref.read(inMemoryQueriesProvider.notifier).remove(id);
   }
 }
 
-final savedQueriesActionsProvider =
-    NotifierProvider<SavedQueriesNotifier, void>(() => SavedQueriesNotifier());
+final savedQueriesActionsProvider = NotifierProvider<SavedQueriesNotifier, void>(
+  SavedQueriesNotifier.new,
+);
